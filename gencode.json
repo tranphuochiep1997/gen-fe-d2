@@ -7,13 +7,13 @@
             "listFeatures": [
                 {
                     "name": "Người dùng hệ thống",
-                    "feature": "system-user",
+                    "feature": "user",
                     "apiUri": {
-                        "getList": "systemUser",
-                        "create": "systemUser",
-                        "update": "systemUser",
-                        "lock": "systemUser/lockItem",
-                        "delete": "systemUser/deleteItem"
+                        "getList": "users",
+                        "create": "users",
+                        "update": "users",
+                        "lock": "users/lock?id=:id",
+                        "delete": "users/:id"
                     },
                     "properties": [
                         {

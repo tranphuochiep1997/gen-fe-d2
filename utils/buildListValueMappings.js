@@ -59,6 +59,9 @@ function buildFormControlFromPropertyConfig(prop) {
     return formControl;
 }
 
+function bindIdParam(uri) {
+    return uri.replace(/:id/gi, '${req.id}');
+}
 function buildListValueMappings(featureConfig) {
     const { feature, properties, workspace, featureGroup, name: featureName, apiUri } = featureConfig;
     const listPropertiesCreateRequest = [];
@@ -82,11 +85,11 @@ function buildListValueMappings(featureConfig) {
         ['${featureNameLowerCase}', featureName.toLowerCase()],
         ['${entityName}', kebabToPascal(feature)],
         // API 
-        ['${apiUri.getList}', apiUri.getList],
-        ['${apiUri.create}', apiUri.create],
-        ['${apiUri.update}', apiUri.update],
-        ['${apiUri.lock}', apiUri.lock],
-        ['${apiUri.delete}', apiUri.delete],
+        ['${apiUri.getList}', bindIdParam(apiUri.getList)],
+        ['${apiUri.create}', bindIdParam(apiUri.create)],
+        ['${apiUri.update}', bindIdParam(apiUri.update)],
+        ['${apiUri.lock}', bindIdParam(apiUri.lock)],
+        ['${apiUri.delete}', bindIdParam(apiUri.delete)],
         // Entity and Object
         ['${listPropertiesEntity}', listPropertiesEntity.join('\n')],
         ['${listPropertiesCreateRequest}', listPropertiesCreateRequest.join('\n')],

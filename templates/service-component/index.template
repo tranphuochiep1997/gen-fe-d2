@@ -29,14 +29,14 @@ export class ${entityName}Service {
   } 
 
   updateItem(req: Update${entityName}) {
-    return this.client.obserseBody().put<BaseResponse>('${apiUri.update}', req);
+    return this.client.obserseBody().put<BaseResponse>(`${apiUri.update}`, req);
   } 
 
   doLockItem(req: ${entityName}Entity) {
-    return this.client.obserseBody().setParam('id', req.id.toString()).put<BaseResponse>('${apiUri.lock}', null);
+    return this.client.obserseBody().put<BaseResponse>(`${apiUri.lock}`, null);
   }
 
   doDeleteItem(req: ${entityName}Entity) {
-    return this.client.obserseBody().setParam('id', req.id.toString()).delete<BaseResponse>('${apiUri.delete}');
+    return this.client.obserseBody().delete<BaseResponse>(`${apiUri.delete}`);
   }
 }
