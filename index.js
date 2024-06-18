@@ -1,6 +1,7 @@
-const fs = require("fs");
-const { execSync } = require("child_process");
-const path = require("path");
+#!/usr/bin/env node
+const fs = require('fs');
+const { execSync } = require('child_process');
+const path = require('path');
 const {
   genFeatureGroupCommand,
   genFeatureCommand,
