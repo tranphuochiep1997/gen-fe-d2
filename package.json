@@ -1,0 +1,20 @@
+{
+  "name": "gen-fe-d2",
+  "version": "0.0.1",
+  "description": "A tool uses npm to generate CRUD screens in VTS Kit FE project",
+  "main": "index.js",
+  "bin": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "templates/*",
+    "utils/*"
+  ],
+  "author": "Hip",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tranphuochiep1997/gen-fe-d2.git"
+  }
+}

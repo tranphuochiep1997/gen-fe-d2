@@ -1,0 +1,80 @@
+<nz-layout class="layout">
+  <nz-content>
+    <div class="background">
+      <app-page-title
+        [breadcrumbs]="['${featureName}']"
+        title="Danh sách ${featureNameLowerCase}"
+        [actions]="actions"
+        [hasSearch]="true"
+        [searchPlaceholder]="'Tìm kiếm...'"
+        (onSearchClicked)="onSearchClicked($event)"
+      ></app-page-title>
+      <div class="inner-content">
+        <ng-container
+          *ngIf="{
+            data: tableData$ | async,
+            meta: meta$ | async
+          } as d"
+        >
+          <nz-table
+            class="table-list"
+            #basicTable
+            [nzData]="d.data || []"
+            (nzPageIndexChange)="onChangePage($event)"
+            [nzWidthConfig]="['5%', '25%', '20%', '20%', '20%', '10%']"
+            [nzFrontPagination]="false"
+            [nzTotal]="d.meta!.totalElements!"
+            [nzShowSizeChanger]="false"
+            [nzPageIndex]="d.meta!.page"
+            [nzPageSize]="d.meta!.size"
+          >
+            <thead>
+              <tr>
+                <th>STT</th>
+${listTableHeaders}
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of basicTable.data; let i = index">
+                <td>{{ i + 1 }}</td>
+${listTableDataRows}
+                <td class="text-center">
+                  <nz-space>
+                    <img
+                      class="table-action"
+                      *nzSpaceItem
+                      width="20"
+                      height="20"
+                      src="./assets/icon/ic_edit.svg"
+                      (click)="onEditItemClicked(data)"
+                    />
+                    <img
+                      class="table-action"
+                      *nzSpaceItem
+                      width="20"
+                      height="20"
+                      src="./assets/icon/ic_lock.svg"
+                      (click)="onLockItemClicked(data)"
+                    />
+                    <img
+                      class="table-action"
+                      *nzSpaceItem
+                      width="20"
+                      height="20"
+                      src="./assets/icon/ic_delete.svg"
+                      (click)="onDeleteItemClicked(data)"
+                    />
+                  </nz-space>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </ng-container>
+      </div>
+    </div>
+  </nz-content>
+</nz-layout>
+
+<${featureGroup}-ui-${feature}-modal-create-item [form]="createForm" [isVisible]="isVisibleCreateModal" (onSubmit)="onSubmitCreateForm($event)" (onCancel)="onCancelCreateForm()"></${featureGroup}-ui-${feature}-modal-create-item>
+<${featureGroup}-ui-${feature}-modal-update-item [form]="updateForm" [isVisible]="isVisibleUpdateModal" (onSubmit)="onSubmitUpdateForm($event)" (onCancel)="onCancelUpdateForm()"></${featureGroup}-ui-${feature}-modal-update-item>

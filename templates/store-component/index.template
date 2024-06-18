@@ -1,0 +1,224 @@
+import { Injectable } from '@angular/core';
+import { tapResponse } from '@ngrx/component-store';
+import { DEFAULT_API_ARGS, Meta, PagingResponse } from '@${workspace}/share/data-access';
+import { ImmerComponentStore } from 'ngrx-immer/component-store';
+import { Observable, switchMap, tap, withLatestFrom } from 'rxjs';
+import { 
+  ${entityName}Service, 
+  ${entityName}Entity, 
+  Create${entityName}, 
+  Update${entityName}
+} from '@${workspace}/${featureGroup}/data-access';
+
+export interface ${entityName}State {
+  loading: boolean;
+  keyword: string;
+  tableData: ${entityName}Entity[];
+  meta?: Meta;
+  error: string | null;
+  createdItem: boolean;
+  errorCreate: string | null;
+}
+
+const initialState: ${entityName}State = {
+  loading: false,
+  keyword: '',
+  tableData: [],
+  meta: {
+    page: DEFAULT_API_ARGS.page,
+    size: DEFAULT_API_ARGS.size,
+  },
+  error: '',
+  createdItem: false,
+  errorCreate: null
+}
+
+@Injectable()
+export class ${entityName}Store extends ImmerComponentStore<${entityName}State> {
+  constructor(private api: ${entityName}Service) {
+    super(initialState);
+  }
+
+  updateMeta = this.updater((state, update: Partial<Meta>) => {
+    state.meta = {
+      ...state.meta,
+      ...update,
+    } as Meta;
+  });
+
+  update = this.updater((state, update: Partial<Meta>) => {
+    state.meta = {
+      ...state.meta,
+      ...update,
+    } as Meta;
+    state.keyword
+  });
+
+
+  readonly fetchDataTable$ = this.effect(($) =>
+    $.pipe(
+      tap(() =>
+        this.patchState({
+          loading: true,
+          error: '',
+        })
+      ),
+      withLatestFrom(
+        this.select((s) => s),
+      ),
+      switchMap(([_, state]) => {
+        return this.api.fetchDataTable({ keyword: state.keyword, page: state.meta!.page, size: state.meta!.size }).pipe(
+          // this.apiOperator.handleError(),
+          tapResponse(
+            (response: PagingResponse<${entityName}Entity>) => {
+              console.log('fetchDataTable success');
+              this.patchState({
+                loading: false,
+                tableData: response.data,
+                meta: {
+                  totalElements: response.totalElements,
+                  totalPages: response.totalPages,
+                  page: state.meta!.page,
+                  size: response.size
+                }
+              })
+            },
+            (e: { message: string }) =>
+              this.patchState({
+                loading: false,
+                error: e.message,
+              })
+          )
+        )
+      })
+    )
+  );
+
+  readonly createItem$ = this.effect<Create${entityName}>(($) =>
+    $.pipe(
+      tap(() =>
+        this.patchState({
+          createdItem: false,
+          errorCreate: '',
+        })
+      ),
+      withLatestFrom(
+        this.select((s) => s),
+      ),
+      switchMap(([req]) => {
+        return this.api.createItem(req).pipe(
+          // this.apiOperator.handleError(),
+          tapResponse(
+            (response: any) => {
+              console.log('createItem success');
+              this.patchState({
+                createdItem: true,
+                errorCreate: '',
+              });
+              this.updateMeta({
+                page: 1,
+              });
+
+              this.fetchDataTable$();
+            },
+            (e: { message: string }) =>
+              this.patchState({
+                createdItem: false,
+                errorCreate: e.message,
+              })
+          )
+        )
+      })
+    )
+  );
+
+  readonly updateItem$ = this.effect<Update${entityName}>(($) =>
+    $.pipe(
+      tap(() =>
+        this.patchState({
+          createdItem: false,
+          errorCreate: '',
+        })
+      ),
+      withLatestFrom(
+        this.select((s) => s),
+      ),
+      switchMap(([req]) => {
+        return this.api.updateItem(req).pipe(
+          // this.apiOperator.handleError(),
+          tapResponse(
+            (response: any) => {
+              console.log('createItem success');
+              this.patchState({
+                createdItem: true,
+                errorCreate: '',
+              });
+              this.updateMeta({
+                page: 1,
+              });
+
+              this.fetchDataTable$();
+            },
+            (e: { message: string }) =>
+              this.patchState({
+                createdItem: false,
+                errorCreate: e.message,
+              })
+          )
+        )
+      })
+    )
+  );
+
+  readonly doLockItem$ = this.effect((req$: Observable<${entityName}Entity>) =>
+    req$.pipe(
+      tap(() =>
+        this.patchState({
+          loading: true,
+        })
+      ),
+      switchMap((req) => {
+        return this.api.doLockItem(req).pipe(
+          // this.apiOperator.handleError(),
+          tapResponse(
+            (response: any) => {
+              console.log('doLockItem success');
+              this.fetchDataTable$();
+            },
+            (e: { message: string }) =>
+              this.patchState({
+                loading: false,
+                error: e.message,
+              })
+          )
+        )
+      })
+    )
+  );
+
+  readonly doDeleteItem$ = this.effect((req$: Observable<${entityName}Entity>) =>
+    req$.pipe(
+      tap(() =>
+        this.patchState({
+          loading: true,
+        })
+      ),
+      switchMap((req) => {
+        return this.api.doDeleteItem(req).pipe(
+          // this.apiOperator.handleError(),
+          tapResponse(
+            (response: any) => {
+              console.log('doDeleteItem success');
+              this.fetchDataTable$();
+            },
+            (e: { message: string }) =>
+              this.patchState({
+                loading: false,
+                error: e.message,
+              })
+          )
+        )
+      })
+    )
+  );
+}

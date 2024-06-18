@@ -1,0 +1,122 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { NgZorroAntdModule } from '@${workspace}/share/services';
+import { AppPageTitleComponent, BreadcrumbComponent, PageAction } from '@${workspace}/share/ui';
+import { Create${entityName}, Update${entityName}, ${entityName}Entity, ${entityName}Store } from '@${workspace}/${featureGroup}/data-access';
+import { NzModalService } from 'ng-zorro-antd/modal';
+import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { distinctUntilChanged } from 'rxjs';
+
+@UntilDestroy()
+@Component({
+  selector: '${featureGroup}-feature-${feature}',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, NgZorroAntdModule, BreadcrumbComponent, AppPageTitleComponent],
+  templateUrl: './${feature}.component.html',
+  styleUrls: ['./${feature}.component.scss'],
+  providers: [${entityName}Store]
+})
+export class ${entityName}Component implements OnInit {
+  constructor(private store: ${entityName}Store, private modal: NzModalService) { }
+
+  actions: PageAction[] = [
+    {
+      text: 'Thêm mới',
+      type: 'primary',
+      onClick: () => this.onAddClicked()
+    }
+  ];
+
+  tableData$ = this.store.select(s => s.tableData);
+  meta$ = this.store.select(s => s.meta);
+  createdItem$ = this.store.select(s => s.createdItem);
+
+  isVisibleCreateModal = false;
+  isVisibleUpdateModal = false;
+
+  createForm = new FormGroup({
+${createFormGroup}
+  });
+
+  updateForm = new FormGroup({
+${updateFormGroup}
+  });
+
+  ngOnInit(): void {
+    this.store.fetchDataTable$();
+
+    this.createdItem$
+      .pipe(untilDestroyed(this), distinctUntilChanged())
+      .subscribe((v) => {
+        if (v) {
+          this.modal.closeAll();
+        }
+      });
+  }
+
+  onSearchClicked(keyword: string) {
+    this.store.patchState({ keyword: keyword });
+    this.store.updateMeta({ page: 1 });
+    this.store.fetchDataTable$();
+  }
+
+  onChangePage(pageIndex: number): void {
+    this.store.updateMeta({ page: pageIndex });
+    this.store.fetchDataTable$();
+  }
+
+  onAddClicked() {
+    this.isVisibleCreateModal = true;
+  }
+
+  onEditItemClicked(item: ${entityName}Entity) {
+    console.log('Item: ', item);
+    this.updateForm.patchValue(item);
+    this.isVisibleUpdateModal = true;
+  }
+
+  onLockItemClicked(item: ${entityName}Entity) {
+    this.modal.confirm({
+      nzTitle: 'Xác nhận khoá ...',
+      nzContent: 'Bạn đang thực hiện khoá ... </br>Bạn chắc chắn muốn thực hiện?',
+      nzOkText: 'Đồng ý',
+      nzCancelText: 'Huỷ',
+      nzOnOk: () => {
+        this.store.doLockItem$(item);
+      }
+    });
+  }
+
+  onDeleteItemClicked(item: ${entityName}Entity) {
+    this.modal.confirm({
+      nzTitle: 'Xác nhận xoá ...',
+      nzContent: 'Bạn đang thực hiện xoá ... </br>Bạn chắc chắn muốn thực hiện?',
+      nzOkText: 'Đồng ý',
+      nzCancelText: 'Huỷ',
+      nzOnOk: () => {
+        this.store.doDeleteItem$(item);
+      }
+    });
+  }
+
+  onSubmitCreateForm(req: Create${entityName}) {
+    this.store.createItem$(req);
+    this.store.fetchDataTable$();
+    this.isVisibleCreateModal = false;
+  }
+
+  onSubmitUpdateForm(req: Update${entityName}) {
+    this.store.updateItem$(req);
+    this.store.fetchDataTable$();
+    this.isVisibleUpdateModal = false;
+  }
+
+  onCancelCreateForm() {
+    this.isVisibleCreateModal = false;
+  }
+
+  onCancelUpdateForm() {
+    this.isVisibleUpdateModal = false;
+  }
+}

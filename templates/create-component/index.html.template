@@ -1,0 +1,11 @@
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="Thêm mới ${featureNameLowerCase}"
+  (nzOnCancel)="handleModalCancel()"
+  (nzOnOk)="handleModalOk()">
+  <ng-container *nzModalContent>
+    <form nz-form nzLayout="vertical" [formGroup]="form">
+${listItemsFormCreateItem}
+    </form>
+  </ng-container>
+</nz-modal>

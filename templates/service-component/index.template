@@ -1,0 +1,42 @@
+import { Injectable } from '@angular/core';
+import { BaseResponse, PagingRequest, PagingResponse } from '@${workspace}/share/data-access';
+import { RestClient } from '@vts-kit/angular-network';
+import { Observable } from 'rxjs';
+import { 
+  ${entityName}Entity, 
+  Create${entityName}, 
+  Update${entityName}
+} from '@${workspace}/${featureGroup}/data-access';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ${entityName}Service {
+  constructor(private client: RestClient) { }
+
+  fetchDataTable(req: PagingRequest): Observable<PagingResponse<${entityName}Entity>> {
+    return this.client.obserseBody()
+    .setParams({
+      'page': req.page.toString(),
+      'size': req.size.toString(),
+      'keyword': req.keyword
+    })
+    .get<PagingResponse<${entityName}Entity>>('${apiUri.getList}');
+  }
+
+  createItem(req: Create${entityName}) {
+    return this.client.obserseBody().post<BaseResponse>('${apiUri.create}', req);
+  } 
+
+  updateItem(req: Update${entityName}) {
+    return this.client.obserseBody().put<BaseResponse>('${apiUri.update}', req);
+  } 
+
+  doLockItem(req: ${entityName}Entity) {
+    return this.client.obserseBody().setParam('id', req.id.toString()).put<BaseResponse>('${apiUri.lock}', null);
+  }
+
+  doDeleteItem(req: ${entityName}Entity) {
+    return this.client.obserseBody().setParam('id', req.id.toString()).delete<BaseResponse>('${apiUri.delete}');
+  }
+}

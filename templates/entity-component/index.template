@@ -1,0 +1,11 @@
+export type ${entityName}Entity = {
+${listPropertiesEntity}
+};
+  
+export type Create${entityName} = {
+${listPropertiesCreateRequest}
+}
+
+export type Update${entityName} = {
+${listPropertiesEntity}
+}

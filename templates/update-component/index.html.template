@@ -1,0 +1,11 @@
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="Cập nhật ${featureNameLowerCase}"
+  (nzOnCancel)="handleModalCancel()"
+  (nzOnOk)="handleModalOk()">
+<ng-container *nzModalContent>
+  <form nz-form nzLayout="vertical" [formGroup]="form">
+${listItemsFormUpdateItem}
+  </form>
+</ng-container>
+</nz-modal>
