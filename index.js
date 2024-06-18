@@ -1,6 +1,6 @@
-const fs = require('fs');
+const fs = require("fs");
 const { execSync } = require("child_process");
-const path = require('path');
+const path = require("path");
 const {
   genFeatureGroupCommand,
   genFeatureCommand,
