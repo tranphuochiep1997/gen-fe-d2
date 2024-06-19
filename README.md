@@ -15,7 +15,7 @@ v16.20.2
 
 ## Usage
 
-1. Place `gencode.json` at your root folder([file example](./gencode.json))
+### 1. Place `gencode.json` at your root folder([file example](./gencode.json))
 ```
 {   
     "workspace": "qtht-fe",
@@ -95,12 +95,12 @@ v16.20.2
 }
 ```
 
-### Explain
+#### Explain
 - **workspace** Root folder name which will be used like @workspace reference
 - **featureGroup** Feature group is a group of relatated features
 - **featureGroupExistAlready** whether to generate new or use existed feature group. `false` = generate new
 
-2. Run command gencode
+### 2. Run command gencode
 ```
 npx gen-fe-d2@latest
 ```

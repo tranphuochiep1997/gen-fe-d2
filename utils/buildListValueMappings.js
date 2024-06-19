@@ -53,7 +53,7 @@ ${inputMapping.map(({value, display}) => (`                    <label nz-radio n
 }
 
 function buildFormControlFromPropertyConfig(prop) {
-    const formControl = `    ${prop.field}: new FormControl(null, {
+    const formControl = `    ${prop.field}: new FormControl<${prop.dataType} | null>(null, {
       validators: [Validators.required],
     })`
     return formControl;
@@ -62,17 +62,28 @@ function buildFormControlFromPropertyConfig(prop) {
 function bindIdParam(uri) {
     return uri.replace(/:id/gi, '${req.id}');
 }
+
+function createFeatureGroupBreadcums(breadcrumbs) {
+    let breadcrumbsString = '';
+    if (breadcrumbs && breadcrumbs.length > 0) {
+        breadcrumbs.forEach(b => {
+            breadcrumbsString += `'${b}', `
+        })
+    }
+    return breadcrumbsString;
+}
 function buildListValueMappings(featureConfig) {
-    const { feature, properties, workspace, featureGroup, name: featureName, apiUri } = featureConfig;
+    const { feature, properties, workspace, featureGroup, breadcrumbs, name: featureName, apiUri } = featureConfig;
+    const featureGroupBreadcrumbs = createFeatureGroupBreadcums(breadcrumbs);
     const listPropertiesCreateRequest = [];
     const listTableHeaders = [];
     const listTableDataRows = [];
     const createFormGroup = [];
     const listItemsFormCreateItem = [];
     properties.forEach(prop => {
-        listPropertiesCreateRequest.push(`    ${prop.field}: ${prop.dataType};`);
+        listPropertiesCreateRequest.push(`    ${prop.field}: ${prop.dataType} | null;`);
         listTableHeaders.push(`                <th>${prop.name}</th>`);
-        listTableDataRows.push(`                <td>data.${prop.field}</td>`);
+        listTableDataRows.push(`                <td>{{data.${prop.field}}}</td>`);
         createFormGroup.push(buildFormControlFromPropertyConfig(prop));
         listItemsFormCreateItem.push(buildFormItemFromPropertyConfig(prop));
     });
@@ -80,6 +91,7 @@ function buildListValueMappings(featureConfig) {
     const listValueMappings = [
         ['${workspace}', workspace],
         ['${featureGroup}', featureGroup],
+        ['featureGroupBreadcrumbs', featureGroupBreadcrumbs],
         ['${feature}', feature],
         ['${featureName}', featureName],
         ['${featureNameLowerCase}', featureName.toLowerCase()],

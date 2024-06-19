@@ -2,7 +2,7 @@
   <nz-content>
     <div class="background">
       <app-page-title
-        [breadcrumbs]="['${featureName}']"
+        [breadcrumbs]="[${featureGroupBreadcrumbs}'${featureName}']"
         title="Danh sách ${featureNameLowerCase}"
         [actions]="actions"
         [hasSearch]="true"

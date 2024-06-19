@@ -4,16 +4,17 @@
         {
             "featureGroup": "auth",
             "featureGroupExistAlready": false,
+            "breadcrumbs": ["Quản trị hệ thống"],
             "listFeatures": [
                 {
                     "name": "Người dùng hệ thống",
                     "feature": "user",
                     "apiUri": {
-                        "getList": "users",
-                        "create": "users",
-                        "update": "users",
-                        "lock": "users/lock?id=:id",
-                        "delete": "users/:id"
+                        "getList": "/v1/users",
+                        "create": "/v1/users",
+                        "update": "/v1/users",
+                        "lock": "/v1/users/lock?id=:id",
+                        "delete": "/v1/users/:id"
                     },
                     "properties": [
                         {
