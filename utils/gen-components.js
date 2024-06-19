@@ -2,6 +2,7 @@ const path = require('path');
 const { genFileContentFromTemplate, writeContentToFile, appendContentToFile } = require('./genFileContentFromTemplate');
 const { buildListValueMappings } = require('./buildListValueMappings');
 const { shouldPropertyUseConstantVariable } = require('./validator-util');
+const { camelToUpperSnakeCase } = require('./string-util');
 
 const entityTemplateFile = path.resolve(__dirname, '../templates/entity-component/index.template');
 function genEntityContent(destinationFilePath, listValueMappings) {
@@ -54,6 +55,7 @@ function genConstantVariables(destinationFilePath, moduleExportFilePath, feature
     const propertiesWithValueMapping = properties
         .filter(prop => shouldPropertyUseConstantVariable(prop))
         .map(prop => !prop.inputMapping ? {...prop, inputMapping: deplayInputMapping} : prop);
+    if (propertiesWithValueMapping.length < 1) return;
     let fileContent = propertiesWithValueMapping.map(prop => {
         const variableName = camelToUpperSnakeCase(prop.field);
         const listValueDisplay = prop.inputMapping.map(item => JSON.stringify(item)).join(',\n')
