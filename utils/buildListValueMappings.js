@@ -79,7 +79,7 @@ function createFeatureGroupBreadcums(breadcrumbs) {
 function genImportConstantVariableStr(listConstantVariableUsed, workspace, featureGroup) {
     if (listConstantVariableUsed.length < 1) return '';
     return `import { 
-${listConstantVariableUsed.map(variable => `  ${variable}`).join('\n')}
+${listConstantVariableUsed.map(variable => `  ${variable},`).join('\n')}
 } from "@${workspace}/${featureGroup}/data-access";\n`;
 }
 
@@ -91,6 +91,7 @@ function genImportConstantVariablePropertiesSet(listConstantVariableUsed) {
 function buildListValueMappings(featureConfig) {
     const { feature, properties, workspace, featureGroup, breadcrumbs, name: featureName, apiUri } = featureConfig;
     const featureGroupBreadcrumbs = createFeatureGroupBreadcums(breadcrumbs);
+    console.log({featureGroupBreadcrumbs});
     const listPropertiesCreateRequest = [];
     const listTableHeaders = [];
     const listTableDataRows = [];

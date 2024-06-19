@@ -67,7 +67,7 @@ function genConstantVariables(destinationFilePath, moduleExportFilePath, feature
     .replaceAll(/"/g, "'");
     writeContentToFile(destinationFilePath, fileContent);
     //Append export file
-    const exportRow = `\nexport * from './lib/${feature}/${feature}.constant';`;
+    const exportRow = `\nexport * from './lib/${feature}/${feature}.constant';\n`;
     appendContentToFile(moduleExportFilePath, exportRow);
 }
 
@@ -78,7 +78,7 @@ function generateAllFilesContentForFeature(featureGroupFolder, featureConfig) {
     const featureDataAccessFolder = `${featureGroupFolder}/data-access/src/lib/${feature}`;
     // Constant variables 
     const constantFilePath = `${featureDataAccessFolder}/${feature}.constant.ts`;
-    const moduleExportFilePath = `${featureGroupFolder}/data-access/src/lib/index.ts`;
+    const moduleExportFilePath = `${featureGroupFolder}/data-access/src/index.ts`;
     genConstantVariables(constantFilePath, moduleExportFilePath, featureConfig);
 
     // Entity, Service, Store handle

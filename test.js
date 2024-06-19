@@ -26,8 +26,6 @@ function genConstantVariables(destinationFilePath, featureConfig) {
     .replaceAll(/,"display":/g, ', display: ')
     .replaceAll(/"}/g, '" }')
     .replaceAll(/"/g, "'");
-
-    console.log(fileContent);
     return fileContent;
 }
 
