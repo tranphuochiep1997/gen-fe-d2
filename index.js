@@ -44,6 +44,7 @@ listFeatureGroups.forEach(group => {
     execSync(genUIUpdateItemCommand(featureGroup, feature), commandOptions);
   });
   const featureGroupAbsFolder = path.join(`./libs/${featureGroup}`);
+  // WARN: Câu lệnh genClassEntityCommand này mà đem lên vòng for trên thì nó lỗi
   listFeatures.forEach(featureConfig => {
     const { feature, name } = featureConfig;
     const featureDataAccessFolder = `${featureGroupAbsFolder}/data-access/src/lib/${feature}`;

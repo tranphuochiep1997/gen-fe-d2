@@ -1,7 +1,8 @@
-const { kebabToPascal } = require('./string-util');
+const { kebabToPascalCase, camelToUpperSnakeCase } = require('./string-util');
+const { shouldPropertyUseConstantVariable } = require('./validator-util');
 
 function buildFormItemFromPropertyConfig(property) {
-    const { name, field, inputType, inputMapping } = property;
+    const { name, field, inputType } = property;
     let itemTemplate = `        <nz-form-item>
             <nz-form-label [nzSpan]="24" nzRequired>${name}</nz-form-label>
             <nz-form-control [nzSpan]="24" nzValidatingTip="Validating...">
@@ -23,17 +24,21 @@ function buildFormItemFromPropertyConfig(property) {
             break;
         }
         case 'select': {
+            const inputMappingVariable = camelToUpperSnakeCase(field);
             inputReplacement = `
                 <nz-select formControlName="${field}" nzSize="large" nzPlaceHolder="Chọn ${name.toLowerCase()}">
-${inputMapping.map(({value, display}) => (`                    <nz-option nzValue="${value}" nzLabel="${display}"></nz-option>`)).join('\n')}
+                    <nz-option *ngFor="let item of ${inputMappingVariable}" nzValue="{{item.value}}" nzLabel="{{item.display}}"></nz-option>
                 </nz-select>`;
+                // ${inputMapping.map(({value, display}) => (`                    <nz-option nzValue="${value}" nzLabel="${display}"></nz-option>`)).join('\n')}
             break;
         }
         case 'radio': {
+            const inputMappingVariable = camelToUpperSnakeCase(field);
             inputReplacement = `
                 <nz-radio-group formControlName="${field}">
-${inputMapping.map(({value, display}) => (`                    <label nz-radio nzValue="${value}">${display}</label>`)).join('\n')}
+                    <label *ngFor="let item of ${inputMappingVariable}" nz-radio nzValue="{{item.value}}">{{item.display}}</label>
                 </nz-radio-group>`;
+                // ${inputMapping.map(({value, display}) => (`                    <label nz-radio nzValue="${value}">${display}</label>`)).join('\n')}
             break;
         }
         case 'checkbox': {
@@ -66,12 +71,23 @@ function bindIdParam(uri) {
 function createFeatureGroupBreadcums(breadcrumbs) {
     let breadcrumbsString = '';
     if (breadcrumbs && breadcrumbs.length > 0) {
-        breadcrumbs.forEach(b => {
-            breadcrumbsString += `'${b}', `
-        })
+        breadcrumbsString = breadcrumbs.map(b => `'${b}', `).join('');
     }
     return breadcrumbsString;
 }
+
+function genImportConstantVariableStr(listConstantVariableUsed, workspace, featureGroup) {
+    if (listConstantVariableUsed.length < 1) return '';
+    return `import { 
+${listConstantVariableUsed.map(variable => `  ${variable}`).join('\n')}
+} from "@${workspace}/${featureGroup}/data-access";\n`;
+}
+
+function genImportConstantVariablePropertiesSet(listConstantVariableUsed) {
+    if (listConstantVariableUsed.length < 1) return '';
+    return listConstantVariableUsed.map(variable => `  readonly ${variable} = ${variable};\n`).join('')
+}
+
 function buildListValueMappings(featureConfig) {
     const { feature, properties, workspace, featureGroup, breadcrumbs, name: featureName, apiUri } = featureConfig;
     const featureGroupBreadcrumbs = createFeatureGroupBreadcums(breadcrumbs);
@@ -80,22 +96,28 @@ function buildListValueMappings(featureConfig) {
     const listTableDataRows = [];
     const createFormGroup = [];
     const listItemsFormCreateItem = [];
+    const listConstantVariableUsed = [];
     properties.forEach(prop => {
         listPropertiesCreateRequest.push(`    ${prop.field}: ${prop.dataType} | null;`);
         listTableHeaders.push(`                <th>${prop.name}</th>`);
         listTableDataRows.push(`                <td>{{data.${prop.field}}}</td>`);
         createFormGroup.push(buildFormControlFromPropertyConfig(prop));
         listItemsFormCreateItem.push(buildFormItemFromPropertyConfig(prop));
+        if (shouldPropertyUseConstantVariable(prop)) {
+            listConstantVariableUsed.push(camelToUpperSnakeCase(prop.field));
+        }
     });
     const listPropertiesEntity = ['    id: number;', ...listPropertiesCreateRequest];
+    const constantVariableImport = genImportConstantVariableStr(listConstantVariableUsed, workspace, featureGroup);
+    const constantVariablePropertiesSet = genImportConstantVariablePropertiesSet(listConstantVariableUsed);
     const listValueMappings = [
         ['${workspace}', workspace],
         ['${featureGroup}', featureGroup],
-        ['featureGroupBreadcrumbs', featureGroupBreadcrumbs],
+        ['${featureGroupBreadcrumbs}', featureGroupBreadcrumbs],
         ['${feature}', feature],
         ['${featureName}', featureName],
         ['${featureNameLowerCase}', featureName.toLowerCase()],
-        ['${entityName}', kebabToPascal(feature)],
+        ['${entityName}', kebabToPascalCase(feature)],
         // API 
         ['${apiUri.getList}', bindIdParam(apiUri.getList)],
         ['${apiUri.create}', bindIdParam(apiUri.create)],
@@ -112,6 +134,9 @@ function buildListValueMappings(featureConfig) {
         ['${updateFormGroup}', createFormGroup.join(',\n')],
         ['${listItemsFormCreateItem}', listItemsFormCreateItem.join('\n')],
         ['${listItemsFormUpdateItem}', listItemsFormCreateItem.join('\n')],
+        // Constant variables
+        ['${constantVariableImport}', constantVariableImport],
+        ['${constantVariablePropertiesSet}', constantVariablePropertiesSet]
     ]
     return listValueMappings;
 }

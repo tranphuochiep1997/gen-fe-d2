@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { NgZorroAntdModule } from "@${workspace}/share/services";
 import { FormGroup, ReactiveFormsModule } from "@angular/forms";
-
+${constantVariableImport}
 @Component({
   selector: "${featureGroup}-ui-${feature}-modal-update-item",
   standalone: true,
@@ -16,7 +16,7 @@ export class ModalUpdateItemComponent {
   @Input() isVisible: boolean = false;
   @Output() onSubmit = new EventEmitter();
   @Output() onCancel = new EventEmitter();
-
+${constantVariablePropertiesSet}
   handleModalOk(): void {
     if (this.form.invalid) return;
     this.onSubmit.emit(this.form.value);

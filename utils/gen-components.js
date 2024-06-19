@@ -1,6 +1,7 @@
 const path = require('path');
-const { genFileContentFromTemplate } = require('./genFileContentFromTemplate');
+const { genFileContentFromTemplate, writeContentToFile, appendContentToFile } = require('./genFileContentFromTemplate');
 const { buildListValueMappings } = require('./buildListValueMappings');
+const { shouldPropertyUseConstantVariable } = require('./validator-util');
 
 const entityTemplateFile = path.resolve(__dirname, '../templates/entity-component/index.template');
 function genEntityContent(destinationFilePath, listValueMappings) {
@@ -47,14 +48,41 @@ function genModalUpdateItemHtmlContent(destinationFilePath, listValueMappings) {
     genFileContentFromTemplate(modalUpdateItemHtmlTemplateFile, destinationFilePath, listValueMappings);
 }
 
+const deplayInputMapping = [{ value: 'value1', display: 'display1' }];
+function genConstantVariables(destinationFilePath, moduleExportFilePath, featureConfig) {
+    const { feature, properties } = featureConfig;
+    const propertiesWithValueMapping = properties
+        .filter(prop => shouldPropertyUseConstantVariable(prop))
+        .map(prop => !prop.inputMapping ? {...prop, inputMapping: deplayInputMapping} : prop);
+    let fileContent = propertiesWithValueMapping.map(prop => {
+        const variableName = camelToUpperSnakeCase(prop.field);
+        const listValueDisplay = prop.inputMapping.map(item => JSON.stringify(item)).join(',\n')
+        return `export const ${variableName} = [\n${listValueDisplay}\n]`;
+    }).join('\n\n');
+    fileContent = fileContent.replaceAll(/{"value":/g, '    { value: ')
+    .replaceAll(/,"display":/g, ', display: ')
+    .replaceAll(/"}/g, '" }')
+    .replaceAll(/"/g, "'");
+    writeContentToFile(destinationFilePath, fileContent);
+    //Append export file
+    const exportRow = `\nexport * from './lib/${feature}/${feature}.constant';`;
+    appendContentToFile(moduleExportFilePath, exportRow);
+}
+
 function generateAllFilesContentForFeature(featureGroupFolder, featureConfig) {
     const { feature } = featureConfig;
-    // Entity, Service, Store handle
+    const listValueMappings = buildListValueMappings(featureConfig);
+
     const featureDataAccessFolder = `${featureGroupFolder}/data-access/src/lib/${feature}`;
+    // Constant variables 
+    const constantFilePath = `${featureDataAccessFolder}/${feature}.constant.ts`;
+    const moduleExportFilePath = `${featureGroupFolder}/data-access/src/lib/index.ts`;
+    genConstantVariables(constantFilePath, moduleExportFilePath, featureConfig);
+
+    // Entity, Service, Store handle
     const entityFilePath = `${featureDataAccessFolder}/${feature}.ts`;
     const serviceFilePath = `${featureDataAccessFolder}/${feature}.service.ts`;
     const storeFilePath = `${featureDataAccessFolder}/${feature}.store.ts`;
-    const listValueMappings = buildListValueMappings(featureConfig);
     genEntityContent(entityFilePath, listValueMappings);
     genServiceContent(serviceFilePath, listValueMappings);
     genStoreContent(storeFilePath, listValueMappings);
