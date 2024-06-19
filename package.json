@@ -1,6 +1,6 @@
 {
   "name": "gen-fe-d2",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "A tool uses npm to generate CRUD screens in VTS Kit FE project",
   "main": "index.js",
   "bin": "index.js",

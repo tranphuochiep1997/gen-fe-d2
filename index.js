@@ -23,7 +23,7 @@ const { workspace, listFeatureGroups } = gencodeConfig
 console.log(gencodeJson);
 
 listFeatureGroups.forEach(group => {
-  const { featureGroup, featureGroupExistAlready, listFeatures } = group;
+  const { featureGroup, featureGroupExistAlready, listFeatures, breadcrumbs: featureGroupBreadcrumbs } = group;
   console.log('GENERATING FEATURE GROUP ' + featureGroup);
   // GENERATE FEATURE GROUP
   if (!featureGroupExistAlready) {
@@ -51,6 +51,6 @@ listFeatureGroups.forEach(group => {
     // fs.mkdirSync(modelsFolder, { recursive: true });
     // GENRATE CLASS ENTITY
     execSync(genClassEntityCommand(featureGroup, feature), {cwd: featureDataAccessFolder, ...commandOptions});
-    generateAllFilesContentForFeature(featureGroupAbsFolder, {...featureConfig, workspace, featureGroup});
+    generateAllFilesContentForFeature(featureGroupAbsFolder, {...featureConfig, workspace, featureGroup, featureGroupBreadcrumbs});
   });
 })

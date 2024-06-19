@@ -68,7 +68,7 @@ function bindIdParam(uri) {
     return uri.replace(/:id/gi, '${req.id}');
 }
 
-function createFeatureGroupBreadcums(breadcrumbs) {
+function genFeatureGroupBreadcumsReplacement(breadcrumbs) {
     let breadcrumbsString = '';
     if (breadcrumbs && breadcrumbs.length > 0) {
         breadcrumbsString = breadcrumbs.map(b => `'${b}', `).join('');
@@ -89,9 +89,9 @@ function genImportConstantVariablePropertiesSet(listConstantVariableUsed) {
 }
 
 function buildListValueMappings(featureConfig) {
-    const { feature, properties, workspace, featureGroup, breadcrumbs, name: featureName, apiUri } = featureConfig;
-    const featureGroupBreadcrumbs = createFeatureGroupBreadcums(breadcrumbs);
-    console.log({featureGroupBreadcrumbs});
+    const { feature, properties, workspace, featureGroup, featureGroupBreadcrumbs, name: featureName, apiUri } = featureConfig;
+    const featureGroupBreadcrumbsReplacement = genFeatureGroupBreadcumsReplacement(featureGroupBreadcrumbs);
+    console.log({featureGroupBreadcrumbsReplacement})
     const listPropertiesCreateRequest = [];
     const listTableHeaders = [];
     const listTableDataRows = [];
@@ -114,7 +114,7 @@ function buildListValueMappings(featureConfig) {
     const listValueMappings = [
         ['${workspace}', workspace],
         ['${featureGroup}', featureGroup],
-        ['${featureGroupBreadcrumbs}', featureGroupBreadcrumbs],
+        ['${featureGroupBreadcrumbs}', featureGroupBreadcrumbsReplacement],
         ['${feature}', feature],
         ['${featureName}', featureName],
         ['${featureNameLowerCase}', featureName.toLowerCase()],
