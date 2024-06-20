@@ -14,7 +14,7 @@ export interface ${entityName}State {
   loading: boolean;
   keyword: string;
   tableData: ${entityName}Entity[];
-  meta?: Meta;
+  meta: Meta;
   error: string | null;
   createdItem: boolean;
   errorCreate: string | null;
@@ -67,7 +67,7 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
         this.select((s) => s),
       ),
       switchMap(([_, state]) => {
-        return this.api.fetchDataTable({ keyword: state.keyword, page: state.meta!.page, size: state.meta!.size }).pipe(
+        return this.api.fetchDataTable({ keyword: state.keyword, page: state.meta.page, size: state.meta.size }).pipe(
           // this.apiOperator.handleError(),
           tapResponse(
             (response: PagingResponse<${entityName}Entity>) => {
@@ -78,8 +78,8 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
                 meta: {
                   totalElements: response.totalElements,
                   totalPages: response.totalPages,
-                  page: state.meta!.page,
-                  size: response.size
+                  page: state.meta.page,
+                  size: state.meta.size
                 }
               })
             },

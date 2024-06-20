@@ -91,7 +91,6 @@ function genImportConstantVariablePropertiesSet(listConstantVariableUsed) {
 function buildListValueMappings(featureConfig) {
     const { feature, properties, workspace, featureGroup, featureGroupBreadcrumbs, name: featureName, apiUri } = featureConfig;
     const featureGroupBreadcrumbsReplacement = genFeatureGroupBreadcumsReplacement(featureGroupBreadcrumbs);
-    console.log({featureGroupBreadcrumbsReplacement})
     const listPropertiesCreateRequest = [];
     const listTableHeaders = [];
     const listTableDataRows = [];

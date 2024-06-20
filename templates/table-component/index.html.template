@@ -37,7 +37,7 @@ ${listTableHeaders}
             </thead>
             <tbody>
               <tr *ngFor="let data of basicTable.data; let i = index">
-                <td>{{ i + 1 }}</td>
+                <td>{{ ((d.meta!.page - 1) * d.meta!.size) + (i + 1) }}</td>
 ${listTableDataRows}
                 <td class="text-center">
                   <nz-space>
