@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BaseResponse, PagingRequest, PagingResponse } from '@${workspace}/share/data-access';
+import { BaseResponse, BaseResponseData, PagingRequest, PagingResponse } from '@${workspace}/share/data-access';
 import { RestClient } from '@vts-kit/angular-network';
 import { Observable } from 'rxjs';
 import { 
@@ -14,18 +14,18 @@ import {
 export class ${entityName}Service {
   constructor(private client: RestClient) { }
 
-  fetchDataTable(req: PagingRequest): Observable<BaseResponse<PagingResponse<${entityName}Entity>>> {
+  fetchDataTable(req: PagingRequest): Observable<BaseResponseData<PagingResponse<${entityName}Entity>>> {
     return this.client.obserseBody()
     .setParams({
       'page': req.page.toString(),
       'size': req.size.toString(),
       'keyword': req.keyword
     })
-    .get<PagingResponse<${entityName}Entity>>('${apiUri.getList}');
+    .get<BaseResponseData<PagingResponse<${entityName}Entity>>>('${apiUri.getList}');
   }
 
-  fetchDetail(id: number): Observable<BaseResponse<${entityName}Entity>> {
-    return this.client.obserseBody().get<BaseResponse<${entityName}Entity>>(`${apiUri.getDetail}`);
+  fetchDetail(id: number): Observable<BaseResponseData<${entityName}Entity>> {
+    return this.client.obserseBody().get<BaseResponseData<${entityName}Entity>>(`${apiUri.getDetail}`);
   }
 
   createItem(req: Create${entityName}) {

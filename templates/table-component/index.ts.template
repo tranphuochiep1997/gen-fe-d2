@@ -56,7 +56,7 @@ ${updateFormGroup}
         }
       });
     	
-    this.selectedItem$.pipe(untilDestroyed(this)).subscribe((v: ${entityName}Entity) => {
+    this.selectedItem$.pipe(untilDestroyed(this)).subscribe((v: ${entityName}Entity | null) => {
       if (v) {
         this.updateForm.patchValue(v);
       }

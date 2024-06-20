@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { tapResponse } from '@ngrx/component-store';
-import { DEFAULT_API_ARGS, Meta, BaseResponse, PagingResponse } from '@${workspace}/share/data-access';
+import { DEFAULT_API_ARGS, Meta, MessageConstant, BaseResponseData, PagingResponse } from '@${workspace}/share/data-access';
 import { ImmerComponentStore } from 'ngrx-immer/component-store';
 import { Observable, switchMap, tap, withLatestFrom } from 'rxjs';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -73,8 +73,7 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
         return this.api.fetchDataTable({ keyword: state.keyword, page: state.meta.page, size: state.meta.size }).pipe(
           // this.apiOperator.handleError(),
           tapResponse(
-            (response: BaseResponse<PagingResponse<${entityName}Entity>>) => {
-              console.log('fetchDataTable success');
+            (response: BaseResponseData<PagingResponse<${entityName}Entity>>) => {
               const responseData: PagingResponse<${entityName}Entity> = response.data;
               this.patchState({
                 loading: false,
@@ -112,7 +111,7 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
         return this.api.fetchDetail(id).pipe(
           // this.apiOperator.handleError(),
           tapResponse(
-            (response: BaseResponse<${entityName}Entity>) => {
+            (response: BaseResponseData<${entityName}Entity>) => {
               if (response.statusCode == 200) {
                 this.patchState({
                   loading: false,
@@ -149,7 +148,7 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
           // this.apiOperator.handleError(),
           tapResponse(
             (response: any) => {
-              this.msg.success('Thêm mới thành công');
+              this.msg.success(MessageConstant.DEFAULT_MESSAGE_SUCCESS_INSERT);
               this.patchState({
                 createdItem: true,
                 errorCreate: '',
@@ -161,7 +160,7 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
               this.fetchDataTable$();
             },
             (e: { message: string }) => {
-              this.msg.error(e.message);
+              this.msg.error(e.message ?? MessageConstant.DEFAULT_MESSAGE_ERROR);
               this.patchState({
                 createdItem: false,
                 errorCreate: e.message,
@@ -189,7 +188,7 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
           // this.apiOperator.handleError(),
           tapResponse(
             (response: any) => {
-              this.msg.success('Cập nhật thành công');
+              this.msg.success(MessageConstant.DEFAULT_MESSAGE_SUCCESS_UPDATE);
               this.patchState({
                 createdItem: true,
                 errorCreate: '',
@@ -201,7 +200,7 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
               this.fetchDataTable$();
             },
             (e: { message: string }) => {
-              this.msg.error(e.message);
+              this.msg.error(e.message ?? MessageConstant.DEFAULT_MESSAGE_ERROR);
               this.patchState({
                 createdItem: false,
                 errorCreate: e.message,
@@ -225,11 +224,11 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
           // this.apiOperator.handleError(),
           tapResponse(
             (response: any) => {
-              this.msg.success('Khóa/mở khóa thành công');
+              this.msg.success(MessageConstant.DEFAULT_MESSAGE_SUCCESS_LOCK);
               this.fetchDataTable$();
             },
             (e: { message: string }) => {
-              this.msg.error(e.message);
+              this.msg.error(e.message ?? MessageConstant.DEFAULT_MESSAGE_ERROR);
               this.patchState({
                 loading: false,
                 error: e.message,
@@ -253,11 +252,11 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
           // this.apiOperator.handleError(),
           tapResponse(
             (response: any) => {
-              this.msg.success('Xoá thành công');
+              this.msg.success(MessageConstant.DEFAULT_MESSAGE_SUCCESS_DELETE);
               this.fetchDataTable$();
             },
             (e: { message: string }) => {
-              this.msg.error(e.message);
+              this.msg.error(e.message ?? MessageConstant.DEFAULT_MESSAGE_ERROR);
               this.patchState({
                 loading: false,
                 error: e.message,
