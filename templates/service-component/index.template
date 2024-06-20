@@ -14,7 +14,7 @@ import {
 export class ${entityName}Service {
   constructor(private client: RestClient) { }
 
-  fetchDataTable(req: PagingRequest): Observable<PagingResponse<${entityName}Entity>> {
+  fetchDataTable(req: PagingRequest): Observable<BaseResponse<PagingResponse<${entityName}Entity>>> {
     return this.client.obserseBody()
     .setParams({
       'page': req.page.toString(),
@@ -22,6 +22,10 @@ export class ${entityName}Service {
       'keyword': req.keyword
     })
     .get<PagingResponse<${entityName}Entity>>('${apiUri.getList}');
+  }
+
+  fetchDetail(id: number): Observable<BaseResponse<${entityName}Entity>> {
+    return this.client.obserseBody().get<BaseResponse<${entityName}Entity>>(`${apiUri.getDetail}`);
   }
 
   createItem(req: Create${entityName}) {

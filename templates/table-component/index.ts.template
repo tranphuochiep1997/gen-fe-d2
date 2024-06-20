@@ -25,13 +25,14 @@ export class ${entityName}Component implements OnInit {
     {
       text: 'Thêm mới',
       type: 'primary',
-      onClick: () => this.onAddClicked()
+      onClick: () => this.onCreateClicked()
     }
   ];
 
   tableData$ = this.store.select(s => s.tableData);
   meta$ = this.store.select(s => s.meta);
   createdItem$ = this.store.select(s => s.createdItem);
+  selectedItem$ = this.store.select(s => s.selectedItem);
 
   isVisibleCreateModal = false;
   isVisibleUpdateModal = false;
@@ -54,6 +55,12 @@ ${updateFormGroup}
           this.modal.closeAll();
         }
       });
+    	
+    this.selectedItem$.pipe(untilDestroyed(this)).subscribe((v: ${entityName}Entity) => {
+      if (v) {
+        this.updateForm.patchValue(v);
+      }
+    })
   }
 
   onSearchClicked(keyword: string) {
@@ -67,13 +74,12 @@ ${updateFormGroup}
     this.store.fetchDataTable$();
   }
 
-  onAddClicked() {
+  onCreateClicked() {
     this.isVisibleCreateModal = true;
   }
 
-  onEditItemClicked(item: ${entityName}Entity) {
-    console.log('Item: ', item);
-    this.updateForm.patchValue(item);
+  onUpdateItemClicked(item: ${entityName}Entity) {
+    this.store.fetchDetail$(item.id);
     this.isVisibleUpdateModal = true;
   }
 
@@ -103,14 +109,14 @@ ${updateFormGroup}
 
   onSubmitCreateForm(req: Create${entityName}) {
     this.store.createItem$(req);
-    this.store.fetchDataTable$();
     this.isVisibleCreateModal = false;
+    this.createForm.reset();
   }
 
   onSubmitUpdateForm(req: Update${entityName}) {
     this.store.updateItem$(req);
-    this.store.fetchDataTable$();
     this.isVisibleUpdateModal = false;
+    this.updateForm.reset();
   }
 
   onCancelCreateForm() {

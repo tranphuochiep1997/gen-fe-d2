@@ -64,8 +64,8 @@ function buildFormControlFromPropertyConfig(prop) {
     return formControl;
 }
 
-function bindIdParam(uri) {
-    return uri.replace(/:id/gi, '${req.id}');
+function bindIdParam(uri, replacement) {
+    return uri.replace(/:id/gi, replacement);
 }
 
 function genFeatureGroupBreadcumsReplacement(breadcrumbs) {
@@ -119,11 +119,12 @@ function buildListValueMappings(featureConfig) {
         ['${featureNameLowerCase}', featureName.toLowerCase()],
         ['${entityName}', kebabToPascalCase(feature)],
         // API 
-        ['${apiUri.getList}', bindIdParam(apiUri.getList)],
-        ['${apiUri.create}', bindIdParam(apiUri.create)],
-        ['${apiUri.update}', bindIdParam(apiUri.update)],
-        ['${apiUri.lock}', bindIdParam(apiUri.lock)],
-        ['${apiUri.delete}', bindIdParam(apiUri.delete)],
+        ['${apiUri.getList}', bindIdParam(apiUri.getList, '${req.id}')],
+        ['${apiUri.getDetail}', bindIdParam(apiUri.getDetail, '${id}')],
+        ['${apiUri.create}', bindIdParam(apiUri.create, '${req.id}')],
+        ['${apiUri.update}', bindIdParam(apiUri.update, '${req.id}')],
+        ['${apiUri.lock}', bindIdParam(apiUri.lock, '${req.id}')],
+        ['${apiUri.delete}', bindIdParam(apiUri.delete, '${req.id}')],
         // Entity and Object
         ['${listPropertiesEntity}', listPropertiesEntity.join('\n')],
         ['${listPropertiesCreateRequest}', listPropertiesCreateRequest.join('\n')],

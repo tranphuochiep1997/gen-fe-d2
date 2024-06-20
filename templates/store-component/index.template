@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { tapResponse } from '@ngrx/component-store';
-import { DEFAULT_API_ARGS, Meta, PagingResponse } from '@${workspace}/share/data-access';
+import { DEFAULT_API_ARGS, Meta, BaseResponse, PagingResponse } from '@${workspace}/share/data-access';
 import { ImmerComponentStore } from 'ngrx-immer/component-store';
 import { Observable, switchMap, tap, withLatestFrom } from 'rxjs';
+import { NzMessageService } from 'ng-zorro-antd/message';
 import { 
   ${entityName}Service, 
   ${entityName}Entity, 
@@ -14,6 +15,7 @@ export interface ${entityName}State {
   loading: boolean;
   keyword: string;
   tableData: ${entityName}Entity[];
+  selectedItem: ${entityName}Entity | null;
   meta: Meta;
   error: string | null;
   createdItem: boolean;
@@ -24,6 +26,7 @@ const initialState: ${entityName}State = {
   loading: false,
   keyword: '',
   tableData: [],
+  selectedItem: null,
   meta: {
     page: DEFAULT_API_ARGS.page,
     size: DEFAULT_API_ARGS.size,
@@ -35,7 +38,7 @@ const initialState: ${entityName}State = {
 
 @Injectable()
 export class ${entityName}Store extends ImmerComponentStore<${entityName}State> {
-  constructor(private api: ${entityName}Service) {
+  constructor(private api: ${entityName}Service, private msg: NzMessageService) {
     super(initialState);
   }
 
@@ -70,24 +73,60 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
         return this.api.fetchDataTable({ keyword: state.keyword, page: state.meta.page, size: state.meta.size }).pipe(
           // this.apiOperator.handleError(),
           tapResponse(
-            (response: PagingResponse<${entityName}Entity>) => {
+            (response: BaseResponse<PagingResponse<${entityName}Entity>>) => {
               console.log('fetchDataTable success');
+              const responseData: PagingResponse<${entityName}Entity> = response.data;
               this.patchState({
                 loading: false,
-                tableData: response.data,
+                tableData: responseData.content,
                 meta: {
-                  totalElements: response.totalElements,
-                  totalPages: response.totalPages,
+                  totalElements: responseData.totalElements,
+                  totalPages: responseData.totalPages,
                   page: state.meta.page,
                   size: state.meta.size
                 }
               })
             },
-            (e: { message: string }) =>
+            (e: { message: string }) => {
+              this.msg.error(e.message);
               this.patchState({
                 loading: false,
                 error: e.message,
               })
+            }
+          )
+        )
+      })
+    )
+  );
+
+  readonly fetchDetail$ = this.effect<number>(($) =>
+    $.pipe(
+      tap(() =>
+        this.patchState({
+          loading: true,
+          error: '',
+        })
+      ),
+      switchMap((id) => {
+        return this.api.fetchDetail(id).pipe(
+          // this.apiOperator.handleError(),
+          tapResponse(
+            (response: BaseResponse<${entityName}Entity>) => {
+              if (response.statusCode == 200) {
+                this.patchState({
+                  loading: false,
+                  selectedItem: response.data,
+                })
+              }
+            },
+            (e: { message: string }) => {
+              this.msg.error(e.message);
+              this.patchState({
+                loading: false,
+                error: e.message,
+              })
+            }
           )
         )
       })
@@ -110,7 +149,7 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
           // this.apiOperator.handleError(),
           tapResponse(
             (response: any) => {
-              console.log('createItem success');
+              this.msg.success('Thêm mới thành công');
               this.patchState({
                 createdItem: true,
                 errorCreate: '',
@@ -121,11 +160,13 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
 
               this.fetchDataTable$();
             },
-            (e: { message: string }) =>
+            (e: { message: string }) => {
+              this.msg.error(e.message);
               this.patchState({
                 createdItem: false,
                 errorCreate: e.message,
               })
+            }
           )
         )
       })
@@ -148,7 +189,7 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
           // this.apiOperator.handleError(),
           tapResponse(
             (response: any) => {
-              console.log('createItem success');
+              this.msg.success('Cập nhật thành công');
               this.patchState({
                 createdItem: true,
                 errorCreate: '',
@@ -159,11 +200,13 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
 
               this.fetchDataTable$();
             },
-            (e: { message: string }) =>
+            (e: { message: string }) => {
+              this.msg.error(e.message);
               this.patchState({
                 createdItem: false,
                 errorCreate: e.message,
               })
+            }
           )
         )
       })
@@ -182,14 +225,16 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
           // this.apiOperator.handleError(),
           tapResponse(
             (response: any) => {
-              console.log('doLockItem success');
+              this.msg.success('Khóa/mở khóa thành công');
               this.fetchDataTable$();
             },
-            (e: { message: string }) =>
+            (e: { message: string }) => {
+              this.msg.error(e.message);
               this.patchState({
                 loading: false,
                 error: e.message,
               })
+            }
           )
         )
       })
@@ -208,14 +253,16 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
           // this.apiOperator.handleError(),
           tapResponse(
             (response: any) => {
-              console.log('doDeleteItem success');
+              this.msg.success('Xoá thành công');
               this.fetchDataTable$();
             },
-            (e: { message: string }) =>
+            (e: { message: string }) => {
+              this.msg.error(e.message);
               this.patchState({
                 loading: false,
                 error: e.message,
               })
+            }
           )
         )
       })

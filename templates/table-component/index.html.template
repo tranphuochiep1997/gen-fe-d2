@@ -37,7 +37,7 @@ ${listTableHeaders}
             </thead>
             <tbody>
               <tr *ngFor="let data of basicTable.data; let i = index">
-                <td>{{ ((d.meta!.page - 1) * d.meta!.size) + (i + 1) }}</td>
+                <td>{{(d.meta!.page - 1) * d.meta!.size + i + 1}}</td>
 ${listTableDataRows}
                 <td class="text-center">
                   <nz-space>
@@ -47,7 +47,7 @@ ${listTableDataRows}
                       width="20"
                       height="20"
                       src="./assets/icon/ic_edit.svg"
-                      (click)="onEditItemClicked(data)"
+                      (click)="onUpdateItemClicked(data)"
                     />
                     <img
                       class="table-action"

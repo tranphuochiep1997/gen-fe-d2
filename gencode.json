@@ -11,6 +11,7 @@
                     "feature": "user",
                     "apiUri": {
                         "getList": "/v1/users",
+                        "getDetail": "/v1/users/:id",
                         "create": "/v1/users",
                         "update": "/v1/users",
                         "lock": "/v1/users/lock?id=:id",
