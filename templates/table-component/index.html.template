@@ -21,7 +21,6 @@
             #basicTable
             [nzData]="d.data || []"
             (nzPageIndexChange)="onChangePage($event)"
-            [nzWidthConfig]="['5%', '25%', '20%', '20%', '20%', '10%']"
             [nzFrontPagination]="false"
             [nzTotal]="d.meta!.totalElements!"
             [nzShowSizeChanger]="false"
