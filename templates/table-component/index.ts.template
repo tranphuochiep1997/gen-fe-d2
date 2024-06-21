@@ -34,6 +34,7 @@ export class ${entityName}Component implements OnInit {
   createdItem$ = this.store.select(s => s.createdItem);
   selectedItem$ = this.store.select(s => s.selectedItem);
 
+  updateItemId: number | null = null;
   isVisibleCreateModal = false;
   isVisibleUpdateModal = false;
 
@@ -56,9 +57,12 @@ ${updateFormGroup}
         }
       });
     	
-    this.selectedItem$.pipe(untilDestroyed(this)).subscribe((v: ${entityName}Entity | null) => {
-      if (v) {
-        this.updateForm.patchValue(v);
+    this.selectedItem$.pipe(untilDestroyed(this)).subscribe((item: ${entityName}Entity | null) => {
+      if (item) {
+        this.updateItemId = item.id;
+        this.updateForm.patchValue(item);
+      } else {
+        this.updateItemId = null;
       }
     })
   }
@@ -114,9 +118,14 @@ ${updateFormGroup}
   }
 
   onSubmitUpdateForm(req: Update${entityName}) {
+    if (!this.updateItemId) return;
+    req.id = this.updateItemId;
     this.store.updateItem$(req);
     this.isVisibleUpdateModal = false;
     this.updateForm.reset();
+    this.store.updater((state) => {
+      state.selectedItem = null;
+    });
   }
 
   onCancelCreateForm() {
