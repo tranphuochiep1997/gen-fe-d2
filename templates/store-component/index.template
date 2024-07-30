@@ -77,7 +77,7 @@ export class ${entityName}Store extends ImmerComponentStore<${entityName}State> 
               const responseData: PagingResponse<${entityName}Entity> = response.data;
               this.patchState({
                 loading: false,
-                tableData: responseData.content,
+                tableData: responseData.listData,
                 meta: {
                   totalElements: responseData.totalElements,
                   totalPages: responseData.totalPages,
