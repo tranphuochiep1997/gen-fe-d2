@@ -13,11 +13,11 @@ function buildFormItemFromPropertyConfig(property) {
     let nzErrorTip = `Vui lòng nhập ${name.toLowerCase()}`;
     switch (inputType) {
         case 'text': {
-            inputReplacement = `<v-input [type]="text" formControlName="${field}" [placeholder]="Nhập ${name.toLowerCase()}" [maxlength]="255"/>`;
+            inputReplacement = `<v-input type="text" formControlName="${field}" placeholder="Nhập ${name.toLowerCase()}" [maxlength]="255"></v-input>`;
             break;
         }
         case 'number': {
-            inputReplacement = `<v-input [type]="number" formControlName="${field}" [placeholder]="Nhập ${name.toLowerCase()}" [maxlength]="255">`;
+            inputReplacement = `<v-input type="number" formControlName="${field}" placeholder="Nhập ${name.toLowerCase()}" [maxlength]="255"></v-input>`;
             break;
         }
         case 'date-picker': {
