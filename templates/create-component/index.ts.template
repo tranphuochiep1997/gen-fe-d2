@@ -2,11 +2,12 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { NgZorroAntdModule } from "@${workspace}/share/services";
 import { FormGroup, ReactiveFormsModule } from "@angular/forms";
+import { InputComponent, TextAreaComponent } from "@qtht-fe/share/ui";
 ${constantVariableImport}
 @Component({
   selector: "${featureGroup}-ui-${feature}-modal-create-item",
   standalone: true,
-  imports: [CommonModule, NgZorroAntdModule, ReactiveFormsModule],
+  imports: [CommonModule, NgZorroAntdModule, ReactiveFormsModule, InputComponent, TextAreaComponent],
   templateUrl: "./${feature}-modal-create-item.component.html",
   styleUrls: ["./${feature}-modal-create-item.component.scss"],
 })
