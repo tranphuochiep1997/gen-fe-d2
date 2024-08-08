@@ -69,6 +69,12 @@
                             "field": "startDate",
                             "dataType": "Date",
                             "inputType": "date-picker"
+                        },
+                        {
+                            "name": "Mô tả",
+                            "field": "description",
+                            "dataType": "string",
+                            "inputType": "textarea"
                         }
                     ]
                 }
