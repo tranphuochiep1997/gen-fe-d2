@@ -5,25 +5,35 @@ function buildFormItemFromPropertyConfig(property) {
     const { name, field, inputType } = property;
     let itemTemplate = `        <nz-form-item>
             <nz-form-label [nzSpan]="24" nzRequired>${name}</nz-form-label>
-            <nz-form-control [nzSpan]="24" nzValidatingTip="Validating...">
+            <nz-form-control [nzSpan]="24" nzErrorTip="{ERROR_TIP_REPLACEMENT}">
                 {INPUT_REPLACEMENT}
             </nz-form-control>
         </nz-form-item>`;
     let inputReplacement = '';
+    let nzErrorTip = `Vui lòng nhập ${name.toLowerCase()}`;
     switch (inputType) {
         case 'text': {
-            inputReplacement = `<input nz-input formControlName="${field}" placeholder="Nhập ${name.toLowerCase()}" nzSize="large"/>`;
+            inputReplacement = `<v-input [type]="text" formControlName="${field}" [placeholder]="Nhập ${name.toLowerCase()}" [maxlength]="255"/>`;
             break;
         }
         case 'number': {
-            inputReplacement = `<input nz-input formControlName="${field}" placeholder="Nhập ${name.toLowerCase()}" nzSize="large" type="number"/>`;
+            inputReplacement = `<v-input [type]="number" formControlName="${field}" [placeholder]="Nhập ${name.toLowerCase()}" [maxlength]="255">`;
             break;
         }
         case 'date-picker': {
+            nzErrorTip = `Vui lòng lựa chọn ${name.toLowerCase()}`;
             inputReplacement = `<nz-date-picker formControlName="${field}"></nz-date-picker>`;
             break;
         }
+        case 'textarea': {
+            inputReplacement = `<v-text-area formControlName="${field}" [rows]="4" placeholder="Nhập ${name.toLowerCase()}" [maxlength]="255"></v-text-area>`;
+                // <nz-textarea-count [nzMaxCharacterCount]="2000">
+                //     <textarea formControlName="${field}" nz-input rows="4" placeholder="Nhập ${name.toLowerCase()}"></textarea>
+                // </nz-textarea-count>`;
+            break;
+        }
         case 'select': {
+            nzErrorTip = `Vui lòng lựa chọn ${name.toLowerCase()}`;
             const inputMappingVariable = camelToUpperSnakeCase(field);
             inputReplacement = `
                 <nz-select formControlName="${field}" nzSize="large" nzPlaceHolder="Chọn ${name.toLowerCase()}">
@@ -33,6 +43,7 @@ function buildFormItemFromPropertyConfig(property) {
             break;
         }
         case 'radio': {
+            nzErrorTip = `Vui lòng lựa chọn ${name.toLowerCase()}`;
             const inputMappingVariable = camelToUpperSnakeCase(field);
             inputReplacement = `
                 <nz-radio-group formControlName="${field}">
@@ -42,8 +53,9 @@ function buildFormItemFromPropertyConfig(property) {
             break;
         }
         case 'checkbox': {
+            nzErrorTip = `Vui lòng lựa chọn ${name.toLowerCase()}`;
             itemTemplate = `        <nz-form-item>
-            <nz-form-control [nzSpan]="24" nzValidatingTip="Validating...">
+            <nz-form-control [nzSpan]="24" nzErrorTip="{ERROR_TIP_REPLACEMENT}">
                 {INPUT_REPLACEMENT}
             </nz-form-control>
         </nz-form-item>`;
@@ -54,7 +66,7 @@ function buildFormItemFromPropertyConfig(property) {
         default:
             break;
     }
-    return itemTemplate.replace('{INPUT_REPLACEMENT}', inputReplacement.trim());
+    return itemTemplate.replace('{ERROR_TIP_REPLACEMENT}', nzErrorTip.trim()).replace('{INPUT_REPLACEMENT}', inputReplacement.trim());
 }
 
 function buildFormControlFromPropertyConfig(prop) {

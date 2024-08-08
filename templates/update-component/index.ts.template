@@ -18,8 +18,16 @@ export class ModalUpdateItemComponent {
   @Output() onCancel = new EventEmitter();
 ${constantVariablePropertiesSet}
   handleModalOk(): void {
-    if (this.form.invalid) return;
-    this.onSubmit.emit(this.form.value);
+    if (this.form.valid) {
+      this.onSubmit.emit(this.form.value);
+    } else {
+      Object.values(this.form.controls).forEach(control => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+    }
   }
 
   handleModalCancel(): void {
